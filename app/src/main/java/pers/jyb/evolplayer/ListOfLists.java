@@ -1,7 +1,11 @@
 package pers.jyb.evolplayer;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -10,8 +14,9 @@ import java.util.ListIterator;
 
 import pers.jyb.evolplayer.Utils;
 
-public class ListOfLists {
+public class ListOfLists implements Serializable {
     private static ListOfLists listOfLists;
+
     private List<MusicList> list;
     private ListOfLists(Context context){
         list=new ArrayList<>();
@@ -27,6 +32,14 @@ public class ListOfLists {
             listOfLists=new ListOfLists(context);
         }
         return listOfLists;
+    }
+
+    public static boolean set(Object obj){
+        if(obj instanceof ListOfLists) {
+            listOfLists = (ListOfLists) obj;
+            return true;
+        }
+        return false;
     }
 
     public void add(int position, MusicList musicList){
@@ -47,13 +60,5 @@ public class ListOfLists {
 
     public int size(){
         return list.size();
-    }
-
-    public void save(){
-
-    }
-
-    public void load(){
-
     }
 }

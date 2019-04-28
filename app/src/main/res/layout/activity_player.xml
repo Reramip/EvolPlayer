@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:keepScreenOn="true"
     tools:context=".PlayerActivity">
 
     <TextView
@@ -58,7 +59,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/list_loop" />
-
+<!--
     <ImageView
         android:id="@+id/image_view_player_master"
         android:layout_width="36dp"
@@ -68,7 +69,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/master" />
-
+-->
     <TextView
         android:id="@+id/text_view_player_music"
         android:layout_width="wrap_content"

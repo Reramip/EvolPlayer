@@ -2,13 +2,13 @@ package pers.jyb.evolplayer;
 
 import android.os.Parcel;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Music{
+public class Music implements Serializable {
     private Long id;
     private String name;
     private String artist;
-    private String album;
     private int duration;
     private String data;
 
@@ -24,7 +24,6 @@ public class Music{
         }
         name = in.readString();
         artist = in.readString();
-        album = in.readString();
         duration = in.readInt();
         data = in.readString();
     }
@@ -53,14 +52,6 @@ public class Music{
         this.artist = artist;
     }
 
-    public String getAlbum() {
-        return album;
-    }
-
-    void setAlbum(String album) {
-        this.album = album;
-    }
-
     int getDuration() {
         return duration;
     }
@@ -86,12 +77,11 @@ public class Music{
                 Objects.equals(id, music.id) &&
                 Objects.equals(name, music.name) &&
                 Objects.equals(artist, music.artist) &&
-                Objects.equals(album, music.album) &&
                 Objects.equals(data, music.data);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, artist, album, duration, data);
+        return Objects.hash(id, name, artist, duration, data);
     }
 }

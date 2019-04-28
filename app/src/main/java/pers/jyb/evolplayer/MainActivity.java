@@ -1,13 +1,11 @@
 package pers.jyb.evolplayer;
 
 import android.Manifest;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.os.IBinder;
+import android.os.PersistableBundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,21 +13,21 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static android.provider.AlarmClock.EXTRA_MESSAGE;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 public class MainActivity extends AppCompatActivity {
     MusicService musicService;
@@ -45,9 +43,8 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
 
-
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -58,8 +55,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         recyclerView=(RecyclerView)findViewById(R.id.recycler_view_lists);
-        // TODO: 读取保存的数据！
+
+        load();
         listOfLists=ListOfLists.get(getApplicationContext());
+
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         adapter = new ListsAdapter(R.layout.list_item_list, listOfLists.getList());
@@ -74,10 +73,6 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         Toolbar mainToolbar = (Toolbar) findViewById(R.id.toolbar_main);
         setSupportActionBar(mainToolbar);
-
-        /*Intent serviceIntent=new Intent(this,MusicService.class);
-        bindService(serviceIntent,musicConnection,Context.BIND_AUTO_CREATE);
-        isBound=true;*/
     }
 
 
@@ -95,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+        save();
         super.onPause();
     }
 
@@ -105,13 +101,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         MusicIntent musicIntent=MusicIntent.get(getApplicationContext());
         stopService(musicIntent.getIntent());
-        /*if(isBound) {
-            unbindService(musicConnection);
-            isBound=false;
-        }*/
+        super.onDestroy();
     }
 
     @Override
@@ -156,20 +148,38 @@ public class MainActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
-    /*private ServiceConnection musicConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
-            musicService = binder.getService();
-            isBound = true;
+    private void save(){
+        try {
+            /*File file=new File("save_list");
+            if(!file.exists()){
+                file.createNewFile();
+            }*/
+            FileOutputStream fos=openFileOutput("save_list", MODE_PRIVATE);
+            ObjectOutputStream oos=new ObjectOutputStream(fos);
+            oos.writeObject(listOfLists);
+            oos.close();
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+    }
 
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            isBound = false;
+    private boolean load(){
+        try {
+            FileInputStream fis=openFileInput("save_list");
+            ObjectInputStream ois=new ObjectInputStream(fis);
+            boolean flag=ListOfLists.set(ois.readObject());
+            ois.close();
+            fis.close();
+            if(!flag){
+                return false;
+            }
+            return true;
+        } catch (IOException e) {
+            return false;
+        } catch (ClassNotFoundException e) {
+            return false;
         }
-    };*/
+    }
 }
 

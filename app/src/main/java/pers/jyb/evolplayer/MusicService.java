@@ -77,9 +77,6 @@ public class MusicService extends Service {
 
     @Override
     public int onStartCommand(final Intent intent, int flags, int startId) {
-        if(mediaPlayer.isPlaying()){
-            mediaPlayer.reset();
-        }
         positionList=intent.getIntExtra("POSITION_LIST",-1);
         position=intent.getIntExtra("POSITION",-1);
         setMusic();
@@ -92,11 +89,13 @@ public class MusicService extends Service {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                Intent currentIntent = new Intent();
-                currentIntent.setAction(Intent.ACTION_VIEW);
-                currentIntent.putExtra("CURRENT_DURATION",mediaPlayer.getCurrentPosition());
-                currentIntent.putExtra("TOTAL_DURATION",mediaPlayer.getDuration());
-                sendBroadcast(currentIntent);
+                if(mediaPlayer!=null) {
+                    Intent currentIntent = new Intent();
+                    currentIntent.setAction(Intent.ACTION_VIEW);
+                    currentIntent.putExtra("CURRENT_DURATION", mediaPlayer.getCurrentPosition());
+                    currentIntent.putExtra("TOTAL_DURATION", mediaPlayer.getDuration());
+                    sendBroadcast(currentIntent);
+                }
             }
         }, 0, 1000);
 
@@ -127,7 +126,6 @@ public class MusicService extends Service {
 
 
     public void setMediaPlayer(){
-        mediaPlayer.reset();
         if(music!=null) {
             Uri uri = Uri.parse(music.getData());
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -145,14 +143,17 @@ public class MusicService extends Service {
                         mediaPlayer.start();
                     } else {
                         playNext();
-                        Intent completeIntent=new Intent();
-                        completeIntent.putExtra("POSITION",position);
-                        completeIntent.setAction("COMPLETE");
-                        sendBroadcast(completeIntent);
                     }
                 }
             });
         }
+    }
+
+    private void sendCompleteBroadcast(){
+        Intent completeIntent=new Intent();
+        completeIntent.putExtra("POSITION",position);
+        completeIntent.setAction("COMPLETE");
+        sendBroadcast(completeIntent);
     }
 
     public int randomChangeMusic(int now){
@@ -177,23 +178,25 @@ public class MusicService extends Service {
         listHistory.addFirst(music);
     }
 
+    private static final String TAG = "MusicService";
     public void playNext(){
-        mediaPlayer.reset();
-        mediaPlayer=new MediaPlayer();
         if (mode == RANDOM_PLAY) {
             position = randomChangeMusic(position);
         } else {
             position = (position + 1) % list.size();
         }
+        list=listOfLists.getList().get(positionList).getList();
+        Log.d(TAG, "playNext: positionList"+positionList+" position: "+position);
         music=list.get(position);
+        mediaPlayer.release();
+        mediaPlayer=new MediaPlayer();
         setMediaPlayer();
         mediaPlayer.start();
         updateHistory();
+        sendCompleteBroadcast();
     }
 
     public void playPrev(){
-        mediaPlayer.reset();
-        mediaPlayer=new MediaPlayer();
         if (mode == RANDOM_PLAY) {
             position = randomChangeMusic(position);
         } else {
@@ -202,10 +205,13 @@ public class MusicService extends Service {
                 position = list.size() - 1;
             }
         }
+        list=listOfLists.getList().get(positionList).getList();
         music=list.get(position);
+        mediaPlayer.reset();
         setMediaPlayer();
         mediaPlayer.start();
         updateHistory();
+        sendCompleteBroadcast();
     }
 
     public int getPosition() {
@@ -221,7 +227,8 @@ public class MusicService extends Service {
                 positionList=positionListOpen;
                 position=positionOpen;
                 setMusic();
-                if(music!=null){
+                if (music != null) {
+                    mediaPlayer.reset();
                     setMediaPlayer();
                     mediaPlayer.start();
                     updateHistory();

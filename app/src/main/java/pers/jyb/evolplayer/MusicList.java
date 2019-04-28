@@ -1,10 +1,11 @@
 package pers.jyb.evolplayer;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MusicList {
+public class MusicList implements Serializable {
     private String name;
     private List<Music> list;
 

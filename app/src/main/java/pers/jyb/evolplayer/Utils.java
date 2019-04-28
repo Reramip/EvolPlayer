@@ -13,9 +13,8 @@ class Utils {
             MediaStore.Audio.Media._ID,          // 0 Long
             MediaStore.Audio.Media.DISPLAY_NAME, // 1 String
             MediaStore.Audio.Media.ARTIST,       // 2 String
-            MediaStore.Audio.Media.ALBUM,        // 3 String
-            MediaStore.Audio.Media.DURATION,     // 4 int
-            MediaStore.Audio.Media.DATA          // 5 String
+            MediaStore.Audio.Media.DURATION,     // 3 int
+            MediaStore.Audio.Media.DATA          // 4 String
     };
 
     static List<Music> getMusicList(Context context) {
@@ -32,9 +31,8 @@ class Utils {
             music.setId(cursor.getLong(0));
             music.setName(cursor.getString(1));
             music.setArtist(cursor.getString(2));
-            music.setAlbum(cursor.getString(3));
-            music.setDuration(cursor.getInt(4));
-            music.setData(cursor.getString(5));
+            music.setDuration(cursor.getInt(3));
+            music.setData(cursor.getString(4));
             musicList.add(music);
         }
         cursor.close();

@@ -140,14 +140,6 @@ public class PlayerActivity extends AppCompatActivity {
             }
         });
 
-        masterImageView= findViewById(R.id.image_view_player_master);
-        masterImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //TODO: effects
-            }
-        });
-
         addImageView= findViewById(R.id.image_view_player_add);
         addImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -186,15 +178,10 @@ public class PlayerActivity extends AppCompatActivity {
             bindService(serviceIntent, musicConnection, Context.BIND_AUTO_CREATE);
            communication.setServiceStarted(true);
         }else{
-            /*if(!(musicService.music.equals(music))) {
-                musicService.positionList = positionList;
-                musicService.position = position;
-                musicService.setMusic();
-                musicService.setMediaPlayer();
-            }*/
             musicIntent = MusicIntent.get(getApplicationContext());
             Intent serviceIntent = musicIntent.getIntent();
             bindService(serviceIntent,musicConnection,Context.BIND_AUTO_CREATE);
+            isBound=true;
         }
         playImageView.setImageDrawable(getResources().getDrawable(R.drawable.pause));
 
@@ -209,6 +196,11 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        if(!isBound){
+            Intent serviceIntent = musicIntent.getIntent();
+            bindService(serviceIntent,musicConnection,Context.BIND_AUTO_CREATE);
+            isBound=true;
+        }
         Intent openPlayerIntent=new Intent();
         if(communication.isServiceStarted()){
             openPlayerIntent.putExtra("POSITION_LIST_OPEN",positionList);
@@ -233,16 +225,22 @@ public class PlayerActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        super.onPause();
         unregisterReceiver(currentReceiver);
         unregisterReceiver(completeReceiver);
         unregisterReceiver(modeReceiver);
+        unbindService(musicConnection);
+        isBound=false;
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(musicConnection);
     }
 
     @SuppressLint("Assert")
@@ -298,14 +296,10 @@ public class PlayerActivity extends AppCompatActivity {
 
     private void playNext(){
         musicService.playNext();
-        music=musicService.music;
-        updateUI();
     }
 
     private void playPrev(){
         musicService.playPrev();
-        music=musicService.music;
-        updateUI();
     }
 
 
@@ -332,6 +326,7 @@ public class PlayerActivity extends AppCompatActivity {
             position=intent.getIntExtra("POSITION",0);
             music=list.get(position);
             updateUI();
+            playImageView.setImageDrawable(getResources().getDrawable(R.drawable.pause));
         }
     }
 
