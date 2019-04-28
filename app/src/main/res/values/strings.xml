@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">EvolPlayer</string>
+    <string name="list_name">ListName</string>
+    <string name="number_of_music">NumberOfMusic</string>
+    <string name="action_favorite">action_add</string>
+    <string name="action_add">add</string>
+    <string name="action_delete">delete</string>
+    <string name="action_setting">setting</string>
+    <string name="action_settings">settings</string>
+    <string name="tag_add">添加至播放列表</string>
+</resources>
