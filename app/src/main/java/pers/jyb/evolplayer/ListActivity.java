@@ -55,7 +55,7 @@ public class ListActivity extends AppCompatActivity {
         positionList=intent.getIntExtra("CLICK_POSITION",-1);
         assert positionList!=-1;
         musicList= listOfLists.getList().get(positionList);
-        recyclerView=(RecyclerView)findViewById(R.id.recycler_view_musics);
+        recyclerView= findViewById(R.id.recycler_view_musics);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         adapter = new MusicsAdapter(R.layout.list_item_music,musicList.getList());
@@ -70,7 +70,7 @@ public class ListActivity extends AppCompatActivity {
         });
         recyclerView.setAdapter(adapter);
         ((MusicsAdapter) adapter).setEmptyView(getView(R.layout.empty_music_list));
-        Toolbar listToolbar = (Toolbar) findViewById(R.id.toolbar_list);
+        Toolbar listToolbar = findViewById(R.id.toolbar_list);
         listToolbar.setTitle(musicList.getName());
         setSupportActionBar(listToolbar);
         ActionBar ab = getSupportActionBar();
@@ -112,6 +112,8 @@ public class ListActivity extends AppCompatActivity {
                     });
                     builder.show();
                     adapter.notifyDataSetChanged();
+                }else{
+                    Toast.makeText(this, "此列表不可删除", Toast.LENGTH_SHORT).show();
                 }
                 return true;
             case R.id.action_settings:
@@ -119,6 +121,8 @@ public class ListActivity extends AppCompatActivity {
                     Intent intentDrag = new Intent(ListActivity.this, ItemDragActivity.class);
                     intentDrag.putExtra("POSITION",positionList);
                     startActivity(intentDrag);
+                }else{
+                    Toast.makeText(this, "此列表不可修改", Toast.LENGTH_SHORT).show();
                 }
                 return true;
             default:

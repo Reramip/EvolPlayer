@@ -1,6 +1,5 @@
 package pers.jyb.evolplayer;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
@@ -8,7 +7,7 @@ import android.provider.MediaStore;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Utils {
+class Utils {
 
     private static final String[] ARGS={
             MediaStore.Audio.Media._ID,          // 0 Long
@@ -19,7 +18,7 @@ public class Utils {
             MediaStore.Audio.Media.DATA          // 5 String
     };
 
-    public static List<Music> getMusicList(Context context) {
+    static List<Music> getMusicList(Context context) {
         List<Music> musicList=new ArrayList<>();
         Music music;
         Cursor cursor = context.getContentResolver()

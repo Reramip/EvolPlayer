@@ -1,7 +1,8 @@
 package pers.jyb.evolplayer;
 
 import android.os.Parcel;
-import android.os.Parcelable;
+
+import java.util.Objects;
 
 public class Music{
     private Long id;
@@ -11,7 +12,7 @@ public class Music{
     private int duration;
     private String data;
 
-    public Music(){
+    Music(){
 
     }
 
@@ -28,27 +29,27 @@ public class Music{
         data = in.readString();
     }
 
-    public Long getId() {
+    Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    void setId(Long id) {
         this.id = id;
     }
 
-    public String getName() {
+    String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    void setName(String name) {
         this.name = name;
     }
 
-    public String getArtist() {
+    String getArtist() {
         return artist;
     }
 
-    public void setArtist(String artist) {
+    void setArtist(String artist) {
         this.artist = artist;
     }
 
@@ -56,23 +57,41 @@ public class Music{
         return album;
     }
 
-    public void setAlbum(String album) {
+    void setAlbum(String album) {
         this.album = album;
     }
 
-    public int getDuration() {
+    int getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    void setDuration(int duration) {
         this.duration = duration;
     }
 
-    public String getData() {
+    String getData() {
         return data;
     }
 
-    public void setData(String data) {
+    void setData(String data) {
         this.data = data;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Music)) return false;
+        Music music = (Music) o;
+        return duration == music.duration &&
+                Objects.equals(id, music.id) &&
+                Objects.equals(name, music.name) &&
+                Objects.equals(artist, music.artist) &&
+                Objects.equals(album, music.album) &&
+                Objects.equals(data, music.data);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, artist, album, duration, data);
     }
 }

@@ -1,23 +1,23 @@
 package pers.jyb.evolplayer;
 
-public class Communication {
-    private boolean isPlayerAcitivityResuming;
-
+class Communication {
     private static Communication communication;
 
-    public boolean isPlayerAcitivityResuming() {
-        return isPlayerAcitivityResuming;
+    private boolean isServiceStarted;
+
+    boolean isServiceStarted() {
+        return isServiceStarted;
     }
 
-    public void setPlayerAcitivityResuming(boolean playerAcitivityResuming) {
-        isPlayerAcitivityResuming = playerAcitivityResuming;
+    void setServiceStarted(boolean serviceStarted) {
+        isServiceStarted = serviceStarted;
     }
 
     private Communication(){
-        isPlayerAcitivityResuming=false;
+        isServiceStarted=false;
     }
 
-    public static Communication get(){
+    static Communication get(){
         if(communication==null){
             communication=new Communication();
         }

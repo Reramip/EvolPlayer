@@ -16,7 +16,7 @@
         android:text="00:00"
         app:layout_constraintBottom_toTopOf="@+id/image_view_player_play"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/seekBar" />
+        app:layout_constraintStart_toEndOf="@+id/seek_bar_play" />
 
     <ImageView
         android:id="@+id/image_view_player_play"
@@ -103,11 +103,15 @@
 
     <SeekBar
         android:id="@+id/seek_bar_play"
+        style="@style/Widget.AppCompat.SeekBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="48dp"
         android:layout_marginEnd="48dp"
         android:layout_marginBottom="16dp"
+        android:progressBackgroundTint="@color/colorAccent"
+        android:progressTint="@android:color/holo_red_dark"
+        android:thumbTint="@android:color/holo_red_light"
         app:layout_constraintBottom_toTopOf="@+id/image_view_player_play"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

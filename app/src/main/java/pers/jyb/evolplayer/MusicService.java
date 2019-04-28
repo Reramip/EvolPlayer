@@ -1,7 +1,10 @@
 package pers.jyb.evolplayer;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -30,17 +33,18 @@ public class MusicService extends Service {
     private final int SINGLE_LOOP=1;
     private final int RANDOM_PLAY=2;
 
-    private int positionPrev;
-    private int mode=LIST_LOOP;
+    private OpenPlayerReceiver openPlayerReceiver;
+    private Communication communication;
 
-    public int position=-1;
-    public int positionList=-1;
-    public ListOfLists listOfLists;
-    public MusicList listHistory;
-    public Music music;
-    public List<Music> list;
-    public int musicNumber;
-    public MediaPlayer mediaPlayer = new MediaPlayer();
+    int mode;
+    int position=-1;
+    int positionList=-1;
+    ListOfLists listOfLists;
+    MusicList listHistory;
+    Music music;
+    List<Music> list;
+    int musicNumber;
+    MediaPlayer mediaPlayer = new MediaPlayer();
 
     private final IBinder binder = new MusicBinder();
 
@@ -48,9 +52,17 @@ public class MusicService extends Service {
     public void onCreate() {
         super.onCreate();
 
+        communication=Communication.get();
+
         listOfLists=ListOfLists.get(getApplicationContext());
         listHistory=listOfLists.getList().get(1);
 
+        mode=LIST_LOOP;
+
+        openPlayerReceiver=new OpenPlayerReceiver();
+        IntentFilter openPLayerFilter=new IntentFilter();
+        openPLayerFilter.addAction("OPEN_PLAYER");
+        registerReceiver(openPlayerReceiver,openPLayerFilter);
     }
 
 
@@ -58,11 +70,13 @@ public class MusicService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        unregisterReceiver(openPlayerReceiver);
         stopMediaPlayer();
+        communication.setServiceStarted(false);
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(final Intent intent, int flags, int startId) {
         if(mediaPlayer.isPlaying()){
             mediaPlayer.reset();
         }
@@ -74,6 +88,18 @@ public class MusicService extends Service {
             mediaPlayer.start();
             updateHistory();
         }
+
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Intent currentIntent = new Intent();
+                currentIntent.setAction(Intent.ACTION_VIEW);
+                currentIntent.putExtra("CURRENT_DURATION",mediaPlayer.getCurrentPosition());
+                currentIntent.putExtra("TOTAL_DURATION",mediaPlayer.getDuration());
+                sendBroadcast(currentIntent);
+            }
+        }, 0, 1000);
+
         return START_STICKY;
     }
 
@@ -101,6 +127,7 @@ public class MusicService extends Service {
 
 
     public void setMediaPlayer(){
+        mediaPlayer.reset();
         if(music!=null) {
             Uri uri = Uri.parse(music.getData());
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -113,14 +140,15 @@ public class MusicService extends Service {
             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    switch (mode) {
-                        case SINGLE_LOOP:
-                            mediaPlayer.seekTo(0);
-                            mediaPlayer.start();
-                            break;
-                        default:
-                            playNext();
-                            break;
+                    if (mode == SINGLE_LOOP) {
+                        mediaPlayer.seekTo(0);
+                        mediaPlayer.start();
+                    } else {
+                        playNext();
+                        Intent completeIntent=new Intent();
+                        completeIntent.putExtra("POSITION",position);
+                        completeIntent.setAction("COMPLETE");
+                        sendBroadcast(completeIntent);
                     }
                 }
             });
@@ -152,14 +180,10 @@ public class MusicService extends Service {
     public void playNext(){
         mediaPlayer.reset();
         mediaPlayer=new MediaPlayer();
-        positionPrev=position;
-        switch(mode){
-            case RANDOM_PLAY:
-                position=randomChangeMusic(position);
-                break;
-            default:
-                position=(position+1)%list.size();
-                break;
+        if (mode == RANDOM_PLAY) {
+            position = randomChangeMusic(position);
+        } else {
+            position = (position + 1) % list.size();
         }
         music=list.get(position);
         setMediaPlayer();
@@ -170,16 +194,13 @@ public class MusicService extends Service {
     public void playPrev(){
         mediaPlayer.reset();
         mediaPlayer=new MediaPlayer();
-        switch(mode){
-            case RANDOM_PLAY:
-                position=randomChangeMusic(position);
-                break;
-            default:
-                position=position-1;
-                if(position<0){
-                    position=list.size()-1;
-                }
-                break;
+        if (mode == RANDOM_PLAY) {
+            position = randomChangeMusic(position);
+        } else {
+            position = position - 1;
+            if (position < 0) {
+                position = list.size() - 1;
+            }
         }
         music=list.get(position);
         setMediaPlayer();
@@ -191,7 +212,29 @@ public class MusicService extends Service {
         return position;
     }
 
-    public class MusicBinder extends Binder {
+    private class OpenPlayerReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int positionOpen=intent.getIntExtra("POSITION_OPEN",0);
+            int positionListOpen=intent.getIntExtra("POSITION_LIST_OPEN",0);
+            if(positionListOpen!=positionList||positionOpen!=position){
+                positionList=positionListOpen;
+                position=positionOpen;
+                setMusic();
+                if(music!=null){
+                    setMediaPlayer();
+                    mediaPlayer.start();
+                    updateHistory();
+                }
+            }
+            Intent playerIntent=new Intent();
+            playerIntent.putExtra("MODE",mode);
+            playerIntent.setAction("MODE");
+            sendBroadcast(playerIntent);
+        }
+    }
+
+    class MusicBinder extends Binder {
         MusicService getService() {
             return MusicService.this;
         }
