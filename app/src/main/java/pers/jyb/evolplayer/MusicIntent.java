@@ -3,7 +3,7 @@ package pers.jyb.evolplayer;
 import android.content.Context;
 import android.content.Intent;
 
-public class MusicIntent {
+class MusicIntent {
     private static MusicIntent musicIntent;
 
     private Intent intent;
@@ -12,11 +12,11 @@ public class MusicIntent {
         intent=new Intent(context ,MusicService.class);
     }
 
-    public Intent getIntent(){
+    Intent getIntent(){
         return intent;
     }
 
-    public static MusicIntent get(Context context){
+    static MusicIntent get(Context context){
         if(musicIntent==null){
             musicIntent=new MusicIntent(context);
         }

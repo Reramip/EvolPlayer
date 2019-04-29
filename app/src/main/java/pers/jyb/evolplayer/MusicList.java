@@ -14,12 +14,12 @@ public class MusicList implements Serializable {
         list=new ArrayList<>();
     }
 
-    public MusicList(String name){
+    MusicList(String name){
         this.name=name;
         list=new ArrayList<>();
     }
 
-    public MusicList(String name, int type){
+    MusicList(String name, int type){
         this.name=name;
         switch(type){
             case 0:
@@ -32,12 +32,8 @@ public class MusicList implements Serializable {
         }
     }
 
-    public String getName() {
+    String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public List<Music> getList() {
@@ -48,27 +44,23 @@ public class MusicList implements Serializable {
         list=musicList;
     }
 
-    public void add(Music music){
+    void add(Music music){
         list.add(music);
     }
 
-    public void add(int index, Music music){
-        list.add(index,music);
-    }
-
-    public void remove(Music music){
+    void remove(Music music){
         list.remove(music);
     }
 
-    public String getNumString(){
+    String getNumString(){
         return " "+list.size()+" 首音乐";
     }
 
-    public boolean contains(Music music){
+    boolean contains(Music music){
         return list.contains(music);
     }
 
-    public void addFirst(Music music){
+    void addFirst(Music music){
         if(list instanceof LinkedList) {
             ((LinkedList<Music>) list).addFirst(music);
         }

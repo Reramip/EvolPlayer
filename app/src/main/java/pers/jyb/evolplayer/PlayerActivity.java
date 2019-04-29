@@ -7,28 +7,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import static pers.jyb.evolplayer.MainActivity.musicList;
 
@@ -60,7 +50,6 @@ public class PlayerActivity extends AppCompatActivity {
     private ImageView prevImageView;
     private ImageView modeImageView;
     private ImageView addImageView;
-    private ImageView masterImageView;
     private SeekBar playSeekBar;
     private TextView nowTextView;
     private TextView durationTextView;
@@ -68,17 +57,14 @@ public class PlayerActivity extends AppCompatActivity {
     private ListOfLists listOfLists;
     private MusicList listAdded;
 
-    @SuppressLint("Assert")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
         listOfLists=ListOfLists.get(getApplicationContext());
         final Intent intent = getIntent();
-        positionList=intent.getIntExtra("POSITION",-1);
-        assert positionList!=-1;
-        position=intent.getIntExtra("CLICK_MUSIC",-1);
-        assert position!=-1;
+        positionList=intent.getIntExtra("POSITION",0);
+        position=intent.getIntExtra("CLICK_MUSIC",0);
 
         communication=Communication.get();
 
@@ -189,11 +175,6 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
         if(!isBound){
@@ -233,17 +214,6 @@ public class PlayerActivity extends AppCompatActivity {
         super.onPause();
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    @SuppressLint("Assert")
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

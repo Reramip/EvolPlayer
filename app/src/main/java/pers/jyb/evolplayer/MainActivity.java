@@ -4,8 +4,6 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.PersistableBundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,18 +19,13 @@ import android.widget.EditText;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 public class MainActivity extends AppCompatActivity {
-    MusicService musicService;
-    //boolean isBound=false;
-
     public static MusicList musicList;
 
     private static final String TAG = "MainActivity";
@@ -75,12 +68,6 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(mainToolbar);
     }
 
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -95,20 +82,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    @Override
     protected void onDestroy() {
         MusicIntent musicIntent=MusicIntent.get(getApplicationContext());
         stopService(musicIntent.getIntent());
         super.onDestroy();
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
     }
 
     @Override
@@ -120,26 +97,23 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_add:
-                //nameNewList 弹窗输入
-                final EditText inputServer = new EditText(this);
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("输入歌单名称")
-                        .setIcon(android.R.drawable.ic_dialog_info).setView(inputServer)
-                        .setNegativeButton("取消", null);
-                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        String nameNewList =inputServer.getText().toString();
-                        listOfLists.add(new MusicList(nameNewList));
-                    }
-                });
-                builder.show();
-                adapter.notifyDataSetChanged();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.action_add) {//nameNewList 弹窗输入
+            final EditText inputServer = new EditText(this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("输入歌单名称")
+                    .setIcon(android.R.drawable.ic_dialog_info).setView(inputServer)
+                    .setNegativeButton("取消", null);
+            builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    String nameNewList = inputServer.getText().toString();
+                    listOfLists.add(new MusicList(nameNewList));
+                }
+            });
+            builder.show();
+            adapter.notifyDataSetChanged();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -150,10 +124,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void save(){
         try {
-            /*File file=new File("save_list");
-            if(!file.exists()){
-                file.createNewFile();
-            }*/
             FileOutputStream fos=openFileOutput("save_list", MODE_PRIVATE);
             ObjectOutputStream oos=new ObjectOutputStream(fos);
             oos.writeObject(listOfLists);
@@ -171,10 +141,7 @@ public class MainActivity extends AppCompatActivity {
             boolean flag=ListOfLists.set(ois.readObject());
             ois.close();
             fis.close();
-            if(!flag){
-                return false;
-            }
-            return true;
+            return flag;
         } catch (IOException e) {
             return false;
         } catch (ClassNotFoundException e) {

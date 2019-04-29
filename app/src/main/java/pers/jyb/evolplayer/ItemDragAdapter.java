@@ -6,7 +6,7 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import java.util.List;
 
 public class ItemDragAdapter extends BaseItemDraggableAdapter<Music, BaseViewHolder> {
-    public ItemDragAdapter(List<Music> music) {
+    ItemDragAdapter(List<Music> music) {
         super(R.layout.item_draggable_view, music);
     }
 

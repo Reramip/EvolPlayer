@@ -1,10 +1,7 @@
 package pers.jyb.evolplayer;
 
-import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Canvas;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -12,25 +9,15 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.chad.library.adapter.base.BaseItemDraggableAdapter;
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.chad.library.adapter.base.BaseViewHolder;
-import com.chad.library.adapter.base.callback.ItemDragAndSwipeCallback;
-import com.chad.library.adapter.base.listener.OnItemDragListener;
-import com.chad.library.adapter.base.listener.OnItemSwipeListener;
-
-import java.util.List;
 
 import static pers.jyb.evolplayer.MainActivity.musicList;
 
@@ -45,15 +32,13 @@ public class ListActivity extends AppCompatActivity {
     private ListOfLists listOfLists;
     private Music music;
 
-    @SuppressLint("Assert")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
         listOfLists=ListOfLists.get(getApplicationContext());
         Intent intent = getIntent();
-        positionList=intent.getIntExtra("CLICK_POSITION",-1);
-        assert positionList!=-1;
+        positionList=intent.getIntExtra("CLICK_POSITION",0);
         musicList= listOfLists.getList().get(positionList);
         recyclerView= findViewById(R.id.recycler_view_musics);
         layoutManager = new LinearLayoutManager(this);

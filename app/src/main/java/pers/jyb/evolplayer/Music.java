@@ -1,7 +1,5 @@
 package pers.jyb.evolplayer;
 
-import android.os.Parcel;
-
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -14,18 +12,6 @@ public class Music implements Serializable {
 
     Music(){
 
-    }
-
-    protected Music(Parcel in) {
-        if (in.readByte() == 0) {
-            id = null;
-        } else {
-            id = in.readLong();
-        }
-        name = in.readString();
-        artist = in.readString();
-        duration = in.readInt();
-        data = in.readString();
     }
 
     Long getId() {
@@ -78,10 +64,5 @@ public class Music implements Serializable {
                 Objects.equals(name, music.name) &&
                 Objects.equals(artist, music.artist) &&
                 Objects.equals(data, music.data);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, artist, duration, data);
     }
 }

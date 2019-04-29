@@ -12,7 +12,6 @@ import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.chad.library.adapter.base.callback.ItemDragAndSwipeCallback;
 import com.chad.library.adapter.base.listener.OnItemDragListener;
@@ -23,8 +22,6 @@ import static pers.jyb.evolplayer.MainActivity.musicList;
 public class ItemDragActivity  extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
-    private ImageView imageView;
-    private MusicList list;
     private int positionList;
     private ListOfLists listOfLists;
 
@@ -34,8 +31,7 @@ public class ItemDragActivity  extends AppCompatActivity {
         setContentView(R.layout.activity_draggable);
 
         Intent intent=getIntent();
-        positionList=intent.getIntExtra("POSITION",-1);
-        assert positionList!=-1;
+        positionList=intent.getIntExtra("POSITION",0);
         listOfLists=ListOfLists.get(getApplicationContext());
         musicList= listOfLists.getList().get(positionList);
 

@@ -6,7 +6,7 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import java.util.List;
 
 public class AddListsAdapter extends BaseQuickAdapter<MusicList, BaseViewHolder> {
-    public AddListsAdapter(int layoutResId, List data) {
+    AddListsAdapter(int layoutResId, List data) {
         super(layoutResId, data);
     }
 

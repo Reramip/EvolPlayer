@@ -9,13 +9,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.IBinder;
-import android.os.Looper;
-import android.os.Message;
-import android.os.Messenger;
 import android.util.Log;
 
 import java.io.IOException;
@@ -24,7 +18,6 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
 import static pers.jyb.evolplayer.MainActivity.musicList;
 
 
@@ -212,10 +205,6 @@ public class MusicService extends Service {
         mediaPlayer.start();
         updateHistory();
         sendCompleteBroadcast();
-    }
-
-    public int getPosition() {
-        return position;
     }
 
     private class OpenPlayerReceiver extends BroadcastReceiver {
